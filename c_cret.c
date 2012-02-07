@@ -72,6 +72,7 @@ int echo_child(int *pipefd) {
 
     // Duplicates this file descriptor so that STDOUT
     // also points to the write end of the pipe
+    // (TODO: error checking)
     dup2(pipefd[WRITE_END], STDOUT_FD);
 
     // This child becomes `echo $message`
@@ -92,7 +93,8 @@ int rev_child(int *pipefd) {
 
     // Duplicates this file descriptor so that STDIN
     // also points to the read end of the pipe
-    dup(pipefd[READ_END]);
+    // (TODO: error checking)
+    dup2(pipefd[READ_END], STDIN_FD);
 
     // This child becomes `rev`
     // with STDIN redirected from the pipe
