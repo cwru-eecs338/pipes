@@ -26,3 +26,6 @@ clean:
 	@# Using the '@' sign suppresses echoing
 	@# the line while the command is run
 	@rm -f $(OUTPUT)
+
+test: all
+	./$(OUTPUT)
