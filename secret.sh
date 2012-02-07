@@ -4,6 +4,13 @@
 # given to the specified program as an argument. Therefore, executing this file
 # is equivalent to running the command `sh secret.sh`
 
-# A shell script is just a list of shell commands in a file.  In this case,
-# we're piping the output of one command ("echo") into another ("rev")
-echo ".egassem terces eht derevocsid tsuj ev'uoY .snoitalutargnoC" | rev
+# A shell script is just a list of shell commands in a file.
+
+# We can define variables
+message=".egassem terces eht derevocsid tsuj ev'uoY .snoitalutargnoC"
+
+# Here, we're piping the output of `echo` into `rev`
+# (we reference variables with the `$` syntax)
+# echo: repeat $message to stdout
+#  rev: reverse the input (line by line) from stdin
+echo $message | rev

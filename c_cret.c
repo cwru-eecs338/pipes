@@ -3,20 +3,20 @@
 #include<stdio.h>
 #include<sys/wait.h>
 
-char *message = ".egassem terces eht derevocsid tsuj ev'uoY .snoitalutargnoC";
+// Useful constants (so we don't have to remember)
 #define  STDIN_FD 0
 #define STDOUT_FD 1
 #define  READ_END 0
 #define WRITE_END 1
 
-int echo_child(void);
-int  rev_child(void);
+char *message = ".egassem terces eht derevocsid tsuj ev'uoY .snoitalutargnoC";
+
+int echo_child(int *);
+int  rev_child(int *);
 
 int main() {
 
-    // Holds file descriptors
-    // for read and write
-    // ends of the pipe
+    // Holds file descriptors for read and write ends of the pipe
     int pipefd[2];
 
     // Create the pipe
@@ -31,10 +31,7 @@ int main() {
         perror("Error birthing echo child");
         return EXIT_FAILURE;
     } else if (echo_child_pid == 0) {
-        close(pipefd[READ_END]);
-        close(STDOUT_FD);
-        dup(pipefd[WRITE_END]);
-        _exit(echo_child());
+        echo_child(pipefd);
     }
 
     // Fork rev child
@@ -43,10 +40,7 @@ int main() {
         perror("Error birthing rev child");
         return EXIT_FAILURE;
     } else if (rev_child_pid == 0) {
-        close(pipefd[WRITE_END]);
-        close(STDIN_FD);
-        dup(pipefd[READ_END]);
-        _exit(rev_child());
+        rev_child(pipefd);
     }
 
     close(pipefd[READ_END]);
@@ -60,14 +54,22 @@ int main() {
     return EXIT_SUCCESS;
 }
 
-int echo_child() {
-    // This child becomes `echo message`
+int echo_child(int *pipefd) {
+    close(pipefd[READ_END]);
+    close(STDOUT_FD);
+    dup(pipefd[WRITE_END]);
+
+    // This child becomes `echo $message`
     execlp("echo", "echo", message, (char *) NULL);
-    return EXIT_FAILURE;
+    _exit(EXIT_FAILURE);
 }
 
-int rev_child() {
+int rev_child(int *pipefd) {
+    close(pipefd[WRITE_END]);
+    close(STDIN_FD);
+    dup(pipefd[READ_END]);
+
     // This child becomes `rev`
     execlp("rev", "rev", (char *) NULL);
-    return EXIT_FAILURE;
+    _exit(EXIT_FAILURE);
 }
